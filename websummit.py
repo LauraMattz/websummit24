@@ -1,4 +1,5 @@
 import streamlit as st
+st.cache(suppress_st_warning=True)  # Clear cache with suppression
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
