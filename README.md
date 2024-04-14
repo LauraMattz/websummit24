@@ -16,6 +16,7 @@ You can install all necessary libraries with the following command:
 
 ```bash
 pip install requests seaborn matplotlib
+```
 
 ## Script Overview
 ### API Request
