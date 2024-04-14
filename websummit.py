@@ -7,7 +7,7 @@ import requests
 from urllib.error import URLError
 
 # Define a function to fetch the data
-@st.cache(ttl=60*60*24)  # Cache for 1 day
+#@st.cache(ttl=60*60*24)  # Cache for 1 day
 def get_data(url, headers):
     try:
         response = requests.get(url, headers=headers)
