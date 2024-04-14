@@ -45,21 +45,43 @@ filtered_data = df[df['Category'].isin(selected_categories)]
 # Plotting using Plotly
 # Plotting using Plotly
 def create_plotly_bar_chart(data, title, x_axis, y_axis):
-    # Create the figure with a specified height and width
-    fig = px.bar(data, y=y_axis, x=x_axis, text=x_axis, title=title, orientation='h')
-    # Update the layout of the figure to adjust the plot and font sizes
-    fig.update_layout(
-        height=600,  # or adjust to your preference
-        width=800,  # or use `None` to auto-scale with the container width
-        title=dict(x=0.5, xanchor='center', font=dict(size=20)),  # Center title and adjust font size
-        xaxis=dict(titlefont=dict(size=18), tickfont=dict(size=12)),  # Adjust x-axis title and tick font sizes
-        yaxis=dict(titlefont=dict(size=18), tickfont=dict(size=12), categoryorder='total ascending'),  # Adjust y-axis settings
+    # Ensure the data is sorted based on the y-axis values for better visualization
+    data = data.sort_values(by=y_axis, ascending=True)
+    
+    # Create the bar chart using Plotly Express
+    fig = px.bar(
+        data_frame=data,
+        x=x_axis,
+        y=y_axis,
+        text=x_axis,
+        title=title,
+        orientation='h',  # 'h' for horizontal, 'v' for vertical
+        height=600,  # Customizable height
+        width=800,  # Customizable width
     )
-    # Add configuration for responsive sizing
-    fig.update_xaxes(automargin=True)
-    fig.update_yaxes(automargin=True)
+    
+    # Update layout for a cleaner look
+    fig.update_layout(
+        xaxis_title=x_axis,  # Set x-axis title
+        yaxis_title=y_axis,  # Set y-axis title
+        yaxis={'categoryorder':'total ascending'},
+        title={'x':0.5, 'xanchor': 'center'},  # Center the plot title
+        margin=dict(l=20, r=20, t=40, b=20),  # Adjust the margins (left, right, top, bottom)
+    )
+    
+    # Update text font and size for readability
+    fig.update_traces(
+        texttemplate='%{text}',  # Use the x-axis values as text labels
+        textposition='inside',  # Position the text labels inside the bars
+        textfont_size=14,  # Customize the size of the text
+    )
+    
+    # Return the Plotly figure object
     return fig
 
-# Use the full width of the container for the plot
+# Call the function and store the returned figure in a variable
+fig = create_plotly_bar_chart(filtered_data, 'Number of Events by Category', 'Category', 'Event Title')
+
+# Display the plot in the Streamlit app
 st.plotly_chart(fig, use_container_width=True)
 
