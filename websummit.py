@@ -1,4 +1,4 @@
-import streamlit as st
+entosimport streamlit as st
 import pandas as pd
 import plotly.express as px
 import requests
@@ -28,7 +28,7 @@ headers = {
     'sec-ch-ua-platform': '"Windows"'
 }
 
-st.title('Web Summit Event Visualization')
+st.title('Eventos Web Summit 2024✨')
 
 try:
     json_data = get_data(url, headers)
@@ -37,51 +37,56 @@ except URLError as e:
     st.error(f"Error fetching data: {e}")
     st.stop()
 
-st.sidebar.header('Filter by Category')
+st.sidebar.header('Filtrar por Categoria')
 categories = df['Category'].unique()
 selected_categories = st.sidebar.multiselect('Categories', categories, default=categories)
 filtered_data = df[df['Category'].isin(selected_categories)]
 
 # Plotting using Plotly
 # Plotting using Plotly
-def create_plotly_bar_chart(data, title, x_axis, y_axis):
-    # Ensure the data is sorted based on the y-axis values for better visualization
-    data = data.sort_values(by=y_axis, ascending=True)
-    
-    # Create the bar chart using Plotly Express
-    fig = px.bar(
-        data_frame=data,
-        x=x_axis,
-        y=y_axis,
-        text=x_axis,
-        title=title,
-        orientation='h',  # 'h' for horizontal, 'v' for vertical
-        height=600,  # Customizable height
-        width=800,  # Customizable width
-    )
-    
-    # Update layout for a cleaner look
-    fig.update_layout(
-        xaxis_title=x_axis,  # Set x-axis title
-        yaxis_title=y_axis,  # Set y-axis title
-        yaxis={'categoryorder':'total ascending'},
-        title={'x':0.5, 'xanchor': 'center'},  # Center the plot title
-        margin=dict(l=20, r=20, t=40, b=20),  # Adjust the margins (left, right, top, bottom)
-    )
-    
-    # Update text font and size for readability
-    fig.update_traces(
-        texttemplate='%{text}',  # Use the x-axis values as text labels
-        textposition='inside',  # Position the text labels inside the bars
-        textfont_size=14,  # Customize the size of the text
-    )
-    
-    # Return the Plotly figure object
+def create_bar_chart(data, title, category):
+    fig = px.bar(data, x=category, title=title)
+    fig.update_layout(xaxis={'categoryorder':'total descending'}, yaxis=dict(title='Number of Events'))
+    fig.update_traces(marker_color='lightskyblue', marker_line_color='black', marker_line_width=1.5)
+    fig.update_xaxes(tickangle=45)
     return fig
 
-# Call the function and store the returned figure in a variable
-fig = create_plotly_bar_chart(filtered_data, 'Number of Events by Category', 'Category', 'Event Title')
+# Main Streamlit app
+st.title('Event Distribution Analysis')
 
-# Display the plot in the Streamlit app
-st.plotly_chart(fig, use_container_width=True)
+try:
+    # Fetch and prepare data
+    json_data = get_data(url, headers)
+    df = prepare_data(json_data)
+    
+    # Sidebar filters for Category, Topic, and Curated Track
+    st.sidebar.header('Filter by Category')
+    all_categories = df['Category'].unique()
+    selected_category = st.sidebar.selectbox('Category', all_categories)
+
+    st.sidebar.header('Filter by Topic')
+    all_topics = df['Topic'].unique()
+    selected_topic = st.sidebar.selectbox('Topic', all_topics)
+    
+    st.sidebar.header('Filter by Curated Track')
+    all_curated_tracks = df['Curated Track'].unique()
+    selected_curated_track = st.sidebar.selectbox('Curated Track', all_curated_tracks)
+    
+    # Filtering data
+    filtered_data_by_category = df[df['Category'] == selected_category]
+    filtered_data_by_topic = df[df['Topic'] == selected_topic]
+    filtered_data_by_curated_track = df[df['Curated Track'] == selected_curated_track]
+    
+    # Creating plots
+    fig_category = create_bar_chart(filtered_data_by_category, f'Events by {selected_category}', 'Category')
+    st.plotly_chart(fig_category, use_container_width=True)
+    
+    fig_topic = create_bar_chart(filtered_data_by_topic, f'Events by {selected_topic}', 'Topic')
+    st.plotly_chart(fig_topic, use_container_width=True)
+    
+    fig_curated_track = create_bar_chart(filtered_data_by_curated_track, f'Events by {selected_curated_track}', 'Curated Track')
+    st.plotly_chart(fig_curated_track, use_container_width=True)
+
+except URLError as e:
+    st.error(f"Error fetching data: {e}")
 
