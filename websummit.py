@@ -44,10 +44,23 @@ selected_categories = st.sidebar.multiselect('Categories', categories, default=c
 filtered_data = df[df['Category'].isin(selected_categories)]
 
 # Plotting using Plotly
+# Plotting using Plotly
 def create_plotly_bar_chart(data, title, x_axis, y_axis):
+    # Create the figure with a specified height and width
     fig = px.bar(data, y=y_axis, x=x_axis, text=x_axis, title=title, orientation='h')
-    fig.update_layout(yaxis={'categoryorder':'total ascending'})
+    # Update the layout of the figure to adjust the plot and font sizes
+    fig.update_layout(
+        height=600,  # or adjust to your preference
+        width=800,  # or use `None` to auto-scale with the container width
+        title=dict(x=0.5, xanchor='center', font=dict(size=20)),  # Center title and adjust font size
+        xaxis=dict(titlefont=dict(size=18), tickfont=dict(size=12)),  # Adjust x-axis title and tick font sizes
+        yaxis=dict(titlefont=dict(size=18), tickfont=dict(size=12), categoryorder='total ascending'),  # Adjust y-axis settings
+    )
+    # Add configuration for responsive sizing
+    fig.update_xaxes(automargin=True)
+    fig.update_yaxes(automargin=True)
     return fig
 
-fig = create_plotly_bar_chart(filtered_data, 'Number of Events by Category', 'Category', 'Event Title')
-st.plotly_chart(fig)
+# Use the full width of the container for the plot
+st.plotly_chart(fig, use_container_width=True)
+
