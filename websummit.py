@@ -5,7 +5,6 @@ import requests
 from urllib.error import URLError
 
 # Define a function to fetch the data
-@st.cache(show_spinner=False, allow_output_mutation=True)
 def get_data(url, headers):
     response = requests.get(url, headers=headers)
     response.raise_for_status()  # Will raise HTTPError for bad responses
