@@ -1,5 +1,4 @@
 import streamlit as st
-st.cache(suppress_st_warning=True)  # Clear cache with suppression
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -7,7 +6,7 @@ import requests
 from urllib.error import URLError
 
 # Define a function to fetch the data
-#@st.cache(ttl=60*60*24)  # Cache for 1 day
+@st.cache(show_spinner=False, allow_output_mutation=True)
 def get_data(url, headers):
     try:
         response = requests.get(url, headers=headers)
